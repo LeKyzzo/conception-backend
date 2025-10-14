@@ -40,6 +40,12 @@ app.get("/item/:id", (req, res) => {
   res.json({ params: req.params });
 });
 
+app.get("/get-user/:userId", (req, res) => {
+  const userId = req.params.userId;
+  console.log("get-user userId =", userId);
+  res.send(`<h1>userId: ${userId}</h1>`);
+});
+
 app.use((req, res) => {
   res.status(404).send("Not Found");
 });
