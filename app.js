@@ -20,6 +20,16 @@ app.get("/transaction", (req, res) => {
   res.json({ transactions, headers: req.headers, body: req.body });
 });
 
+// /query-example?name=Matéo&age=20
+app.get("/query-example", (req, res) => {
+  res.json({ query: req.query });
+});
+
+// /item/1
+app.get("/item/:id", (req, res) => {
+  res.json({ params: req.params });
+});
+
 app.use((req, res) => {
   res.status(404).send("Not Found");
 });
