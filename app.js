@@ -53,6 +53,49 @@ app.post("/data", (req, res) => {
   res.json(req.body);
 });
 
+let tasks = [];
+let nextTaskId = 1;
+
+// GET /tasks
+app.get("/tasks", (req, res) => {
+  res.json(tasks);
+});
+
+// POST /new-task
+// expected body: { title: string, description: string, isDone: boolean }
+app.post("/new-task", (req, res) => {
+  const { title, description, isDone } = req.body;
+  const task = {
+    id: nextTaskId++,
+    title: title || "",
+    description: description || "",
+    isDone: !!isDone,
+  };
+  tasks.push(task);
+  res.status(201).json(task);
+});
+
+// PUT /update-task/:id
+app.put("/update-task/:id", (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const task = tasks.find((t) => t.id === id);
+  if (!task) return res.status(404).json({ error: "Task not found" });
+  const { title, description, isDone } = req.body;
+  if (title !== undefined) task.title = title;
+  if (description !== undefined) task.description = description;
+  if (isDone !== undefined) task.isDone = !!isDone;
+  res.json(task);
+});
+
+// DELETE /delete-task/:id
+app.delete("/delete-task/:id", (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const idx = tasks.findIndex((t) => t.id === id);
+  if (idx === -1) return res.status(404).json({ error: "Task not found" });
+  const removed = tasks.splice(idx, 1)[0];
+  res.json(removed);
+});
+
 app.use((req, res) => {
   res.status(404).send("Not Found");
 });
