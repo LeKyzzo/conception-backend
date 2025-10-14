@@ -10,6 +10,11 @@ app.get("/some-html", (req, res) => {
   res.send("<html><body><h1>bonjour html</h1></body></html>");
 });
 
+app.get("/some-json", (req, res) => {
+  const obj = { age: 22, nom: "Jane" };
+  res.json(obj);
+});
+
 app.use((req, res) => {
   res.status(404).send("Not Found");
 });
