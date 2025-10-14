@@ -15,6 +15,11 @@ app.get("/some-json", (req, res) => {
   res.json(obj);
 });
 
+app.get("/transaction", (req, res) => {
+  const transactions = [100, 2000, 3000];
+  res.json(transactions);
+});
+
 app.use((req, res) => {
   res.status(404).send("Not Found");
 });
