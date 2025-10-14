@@ -1,5 +1,7 @@
 const express = require("express");
 const app = express();
+// parse JSON bodies (for POST requests)
+app.use(express.json());
 const port = 3000;
 
 app.get("/", (req, res) => {
@@ -44,6 +46,11 @@ app.get("/get-user/:userId", (req, res) => {
   const userId = req.params.userId;
   console.log("get-user userId =", userId);
   res.send(`<h1>userId: ${userId}</h1>`);
+});
+
+app.post("/data", (req, res) => {
+  console.log("POST /data body =", req.body);
+  res.json(req.body);
 });
 
 app.use((req, res) => {
