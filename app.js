@@ -25,6 +25,16 @@ app.get("/query-example", (req, res) => {
   res.json({ query: req.query });
 });
 
+app.get("/exo-query-string", (req, res) => {
+  console.log(req.query);
+  const age = req.query.age;
+  if (age) {
+    res.send(`<h1>${age}</h1>`);
+  } else {
+    res.send("hello");
+  }
+});
+
 // /item/1
 app.get("/item/:id", (req, res) => {
   res.json({ params: req.params });
