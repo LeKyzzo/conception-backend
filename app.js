@@ -17,7 +17,7 @@ app.get("/some-json", (req, res) => {
 
 app.get("/transaction", (req, res) => {
   const transactions = [100, 2000, 3000];
-  res.json(transactions);
+  res.json({ transactions, headers: req.headers, body: req.body });
 });
 
 app.use((req, res) => {
