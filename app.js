@@ -1,16 +1,13 @@
 const express = require("express");
 const app = express();
-// parse JSON bodies (for POST requests)
 app.use(express.json());
 const port = 3000;
 
-// Simple logger middleware that runs for every request
 function loggerMiddleware(req, res, next) {
   console.log("nouvelle requête entrante");
   next();
 }
 
-// Register the middleware globally
 app.use(loggerMiddleware);
 
 app.get("/", (req, res) => {
