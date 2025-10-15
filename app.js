@@ -4,6 +4,15 @@ const app = express();
 app.use(express.json());
 const port = 3000;
 
+// Simple logger middleware that runs for every request
+function loggerMiddleware(req, res, next) {
+  console.log("nouvelle requête entrante");
+  next();
+}
+
+// Register the middleware globally
+app.use(loggerMiddleware);
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
