@@ -10,6 +10,10 @@ function loggerMiddleware(req, res, next) {
 
 app.use(loggerMiddleware);
 
+const path = require("path");
+app.use("/templates", express.static(path.join(__dirname, "templates")));
+app.use("/public", express.static(path.join(__dirname, "public")));
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
