@@ -21,10 +21,12 @@ function headersLogger(req, res, next) {
 }
 app.use(headersLogger);
 
-const SECRET_TOKEN = "42";
+// Auth token generated at runtime by /authenticate
+let currentToken = null;
 const openExact = new Set([
   "/",
   "/hello",
+  "/authenticate",
   "/some-html",
   "/some-json",
   "/query-example",
@@ -43,7 +45,7 @@ function firewall(req, res, next) {
   if (isOpenPath(pathname)) return next();
   const auth = req.headers["authorization"];
   const token = (auth || "").startsWith("Bearer ") ? auth.slice(7) : auth;
-  if (token !== SECRET_TOKEN) {
+  if (!currentToken || token !== currentToken) {
     return res.status(403).send("Forbidden");
   }
   next();
@@ -58,6 +60,15 @@ app.get("/", (req, res) => {
 // 1) Public hello route
 app.get("/hello", (req, res) => {
   res.send("<h1>hello</h1>");
+});
+
+const crypto = require("crypto");
+app.post("/authenticate", (req, res) => {
+  const { email, password } = req.body || {};
+  const token = crypto.randomBytes(16).toString("hex");
+  currentToken = token;
+  console.log("New auth token generated for", email || "(no email)", token);
+  res.json({ token });
 });
 
 app.get("/some-html", (req, res) => {
