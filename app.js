@@ -14,8 +14,22 @@ const path = require("path");
 app.use("/templates", express.static(path.join(__dirname, "templates")));
 app.use("/public", express.static(path.join(__dirname, "public")));
 
+const SECRET_TOKEN = "42";
+function requireToken(req, res, next) {
+  const token = req.header("token");
+  if (token !== SECRET_TOKEN) {
+    return res.status(403).send("Forbidden");
+  }
+  next();
+}
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
+});
+
+// 1) Public hello route
+app.get("/hello", (req, res) => {
+  res.send("<h1>hello</h1>");
 });
 
 app.get("/some-html", (req, res) => {
@@ -30,6 +44,16 @@ app.get("/some-json", (req, res) => {
 app.get("/transaction", (req, res) => {
   const transactions = [100, 2000, 3000];
   res.json({ transactions, headers: req.headers, body: req.body });
+});
+
+// 2) Restricted JSON route (requires header token: 42)
+app.get("/restricted1", requireToken, (req, res) => {
+  res.json({ message: "topsecret" });
+});
+
+// 4) Restricted HTML route (requires header token: 42)
+app.get("/restricted2", requireToken, (req, res) => {
+  res.send("<h1>Admin space</h1>");
 });
 
 // /query-example?name=Matéo&age=20
