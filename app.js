@@ -14,14 +14,42 @@ const path = require("path");
 app.use("/templates", express.static(path.join(__dirname, "templates")));
 app.use("/public", express.static(path.join(__dirname, "public")));
 
+// 1) Middleware: log all request headers
+function headersLogger(req, res, next) {
+  console.log("Request headers:", req.headers);
+  next();
+}
+app.use(headersLogger);
+
 const SECRET_TOKEN = "42";
-function requireToken(req, res, next) {
-  const token = req.header("token");
+const openExact = new Set([
+  "/",
+  "/hello",
+  "/some-html",
+  "/some-json",
+  "/query-example",
+  "/exo-query-string",
+  "/tasks",
+]);
+const openPrefixes = ["/templates/", "/public/", "/item/", "/get-user/"];
+
+function isOpenPath(pathname) {
+  if (openExact.has(pathname)) return true;
+  return openPrefixes.some((p) => pathname.startsWith(p));
+}
+
+function firewall(req, res, next) {
+  const pathname = req.path || req.url;
+  if (isOpenPath(pathname)) return next();
+  const auth = req.headers["authorization"];
+  const token = (auth || "").startsWith("Bearer ") ? auth.slice(7) : auth;
   if (token !== SECRET_TOKEN) {
     return res.status(403).send("Forbidden");
   }
   next();
 }
+
+app.use(firewall);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -46,13 +74,11 @@ app.get("/transaction", (req, res) => {
   res.json({ transactions, headers: req.headers, body: req.body });
 });
 
-// 2) Restricted JSON route (requires header token: 42)
-app.get("/restricted1", requireToken, (req, res) => {
+app.get("/restricted1", (req, res) => {
   res.json({ message: "topsecret" });
 });
 
-// 4) Restricted HTML route (requires header token: 42)
-app.get("/restricted2", requireToken, (req, res) => {
+app.get("/restricted2", (req, res) => {
   res.send("<h1>Admin space</h1>");
 });
 
