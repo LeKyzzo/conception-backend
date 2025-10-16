@@ -14,14 +14,12 @@ const path = require("path");
 app.use("/templates", express.static(path.join(__dirname, "templates")));
 app.use("/public", express.static(path.join(__dirname, "public")));
 
-// 1) Middleware: log all request headers
 function headersLogger(req, res, next) {
   console.log("Request headers:", req.headers);
   next();
 }
 app.use(headersLogger);
 
-// Auth token generated at runtime by /authenticate
 let currentToken = null;
 const openExact = new Set([
   "/",
@@ -57,7 +55,6 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-// 1) Public hello route
 app.get("/hello", (req, res) => {
   res.send("<h1>hello</h1>");
 });
