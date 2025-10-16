@@ -20,7 +20,7 @@ app.use("/templates", express.static(path.join(__dirname, "templates")));
 app.use("/public", express.static(path.join(__dirname, "public")));
 
 function headersLogger(req, res, next) {
-  console.log("En-têtes de la requête :", req.headers);
+  console.log("Request headers:", req.headers);
   next();
 }
 app.use(headersLogger);
@@ -61,11 +61,11 @@ function firewall(req, res, next) {
 app.use(firewall);
 
 app.get("/", (req, res) => {
-  res.send("Bonjour le monde !");
+  res.send("Hello World!");
 });
 
 app.get("/hello", (req, res) => {
-  res.send("<h1>bonjour</h1>");
+  res.send("<h1>hello</h1>");
 });
 
 app.post("/authenticate", (req, res) => {
@@ -117,11 +117,11 @@ app.get("/transaction", (req, res) => {
 });
 
 app.get("/restricted1", (req, res) => {
-  res.json({ message: "ultra-secret" });
+  res.json({ message: "topsecret" });
 });
 
 app.get("/restricted2", (req, res) => {
-  res.send("<h1>Espace administrateur</h1>");
+  res.send("<h1>Admin space</h1>");
 });
 
 // /query-example?name=Matéo&age=20
@@ -135,7 +135,7 @@ app.get("/exo-query-string", (req, res) => {
   if (age) {
     res.send(`<h1>${age}</h1>`);
   } else {
-    res.send("bonjour");
+    res.send("hello");
   }
 });
 
@@ -146,12 +146,12 @@ app.get("/item/:id", (req, res) => {
 
 app.get("/get-user/:userId", (req, res) => {
   const userId = req.params.userId;
-  console.log("get-user identifiant utilisateur =", userId);
-  res.send(`<h1>Utilisateur : ${userId}</h1>`);
+  console.log("get-user userId =", userId);
+  res.send(`<h1>userId: ${userId}</h1>`);
 });
 
 app.post("/data", (req, res) => {
-  console.log("POST /data corps =", req.body);
+  console.log("POST /data body =", req.body);
   res.json(req.body);
 });
 
@@ -199,9 +199,9 @@ app.delete("/delete-task/:id", (req, res) => {
 });
 
 app.use((req, res) => {
-  res.status(404).send("Introuvable");
+  res.status(404).send("Not Found");
 });
 
 app.listen(port, () => {
-  console.log(`Application d'exemple à l'écoute sur le port ${port}`);
+  console.log(`Example app listening on port ${port}`);
 });
