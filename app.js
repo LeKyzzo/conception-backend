@@ -3,6 +3,7 @@ const {
   checkCredentials,
   issueToken,
   getRegisteredUsers,
+  newUserRegistered,
 } = require("./inMemoryUserRepository");
 const app = express();
 app.use(express.json());
@@ -31,6 +32,7 @@ const openExact = new Set([
   "/",
   "/hello",
   "/authenticate",
+  "/register",
   "/some-html",
   "/some-json",
   "/query-example",
@@ -96,6 +98,34 @@ app.post("/authenticate", (req, res) => {
 
   console.log("Nouveau jeton généré pour", email, token);
   res.json({ token, user });
+});
+
+app.post("/register", (req, res) => {
+  const { email, password, fullName } = req.body || {};
+  if (!email || !password) {
+    return res.status(400).json({
+      error: "MISSING_FIELDS",
+      message: "L'email et le mot de passe sont obligatoires",
+    });
+  }
+
+  const result = newUserRegistered({ email, password, fullName });
+  if (!result.ok) {
+    const status = result.reason === "EMAIL_ALREADY_USED" ? 409 : 400;
+    const message =
+      result.reason === "EMAIL_ALREADY_USED"
+        ? "Cet email est déjà utilisé"
+        : "Les informations fournies sont invalides";
+    return res.status(status).json({
+      error: result.reason,
+      message,
+    });
+  }
+
+  res.status(201).json({
+    message: "Utilisateur inscrit avec succès",
+    utilisateur: result.user,
+  });
 });
 
 app.get("/registered-users", (req, res) => {

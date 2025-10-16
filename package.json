@@ -3,6 +3,7 @@
     "db:users": "node db_utils.js"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^5.1.0",
     "pg": "^8.16.3",
     "dotenv": "^16.4.5"
